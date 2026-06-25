@@ -220,4 +220,4 @@ The transmission layer (24 figures, 155 edges): `transmission_layer.json` in thi
 
 ## Medium Article
 
-[How Ideas Travel Across Religions: A Computational Journey Through 2,000 Years of Indian Philosophy](https://joyboseroy.medium.com/how-ideas-travel-across-religions-a-computational-journey-through-2000-years-of-indian-philosophy-ce91b089e888)*
+[How Ideas Travel Across Religions: A Computational Journey Through 2,000 Years of Indian Philosophy](https://joyboseroy.medium.com/how-ideas-travel-across-religions-a-computational-journey-through-2000-years-of-indian-philosophy-ce91b089e888)
