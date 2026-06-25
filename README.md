@@ -218,8 +218,6 @@ The transmission layer (24 figures, 155 edges): `transmission_layer.json` in thi
 
 ---
 
-## Author
+## Medium Article
 
-Joy Bose | [GitHub](https://github.com/joyboseroy) | [HuggingFace](https://huggingface.co/joyboseroy) | [Medium](https://medium.com/@joyboseroy)
-
-*Related Medium article: How Ideas Travel Across Religions: A Computational Journey Through 2,000 Years of Indian Philosophy*
+[How Ideas Travel Across Religions: A Computational Journey Through 2,000 Years of Indian Philosophy](https://joyboseroy.medium.com/how-ideas-travel-across-religions-a-computational-journey-through-2000-years-of-indian-philosophy-ce91b089e888)*
