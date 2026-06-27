@@ -1,199 +1,174 @@
-# agentic-diffusion-sim
+# darshana-temporal-analysis
 
-**How do ideas travel across religions? We built a network analysis and simulation to find out.**
+**Three computational studies of Indian philosophical traditions using the darshana-graph.**
 
-This repository applies graph science and agent-based modeling to the [darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph), a dataset of 28,322 documented philosophical relationships across Hindu, Buddhist, and Jain traditions. Using betweenness centrality, shortest-path traversal, and diffusion simulation, we trace how concepts travel across traditions and which historical figures acted as the critical bridges.
+This repository contains the code, data, and experiments supporting the paper:
 
----
+> **Attribution Bias in Philosophical Knowledge Graphs: Corpus Frequency versus Temporal Sourcing**
 
-## The Core Question
-
-If a new syncretic idea enters the philosophical network at one tradition, how far does it travel? Which concepts carry it across tradition boundaries? And which historical figures were the actual bridges?
-
-We answer this through three tools applied to the same graph:
-
-- **Betweenness centrality analysis** to identify which concepts are the structural highway junctions
-- **Shortest-path traversal** to find the actual routes between traditions
-- **Agent-based diffusion simulation** to model how belief spreads dynamically over time
-
-The centrality and path-finding results are the primary contribution. The simulation adds a dynamic lens, using a four-stage belief update model drawn from social network diffusion research (Krishnan, 2025).
+The paper argues that corpus-frequency attribution systematically misattributes philosophical concepts to later, textually dominant schools, demonstrates this using the [darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph) (28,322 documented relationships across Hindu, Buddhist, and Jain traditions), and shows that temporal attribution enables a new class of cross-tradition structural analysis.
 
 ---
 
-## Key Findings
+## Studies in this repository
 
-**Finding 1: Brahman dominates the entire network.**
+### Study 1: Attribution Bias and Temporal Sourcing (`temporal/`)
 
-Every one of the top 25 concepts by betweenness centrality is Hindu. Brahman scores 0.38, nearly double the second-place concept (atman at 0.23). No Buddhist, Jain, or Sufi concept appears in the top 25. Any idea that wants to travel cross-tradition has to pass through Vedantic vocabulary first.
+Corpus-frequency attribution assigns each concept to the school that mentions it most in the available text. We show this conflates textual power, historical priority, and philosophical significance — three different things.
 
-This reflects both the historical dominance of Advaita Vedanta in Indian philosophical discourse and the relative abundance of digitized Sanskrit texts compared to Pali or Tibetan sources. Both factors are real and worth acknowledging.
+**Key findings:**
+- Seven of the top 25 concepts by betweenness centrality predate their attributed school by 288 to 2,288 years
+- Moksha, attributed to Advaita Vedanta, appears first in Jain sources over 1,200 years earlier
+- The network at 300 BCE (17 Tier-1 concepts with explicit citations) is 59% Vedic, 24% Jain, 18% Buddhist — not the Advaita-dominated picture corpus frequency produces
+- Between 300 CE and 800 CE the network grows from 18 to 1,028 nodes, with 97.4% carrying Advaita proxy dates — a corpus composition artifact, not historical reality
 
-**Finding 2: The shortest paths between traditions are historically meaningful.**
+**Scripts:**
+```bash
+cd temporal/
 
-| Journey | Steps | Route |
-|---|---|---|
-| sunyata to krsna consciousness | 2 | sunyata → maya → krsna consciousness |
-| anatta to atman | 2 | anatta → [Ramana Maharshi] → atman |
-| fana to krsna consciousness | 3 | fana → [Ramakrishna] → brahman → krsna consciousness |
-| nirvana to lila | 4 | nirvana → [Aurobindo] → consciousness → [Prabhupada] → lila |
-| ik onkar to nirvana | 3 | ik onkar → brahman → samadhi → nirvana |
-| choiceless awareness to brahman | 3 | choiceless awareness → [Krishnamurti] → maya → brahman |
+# Temporal mismatch analysis: which concepts predate their attributed school?
+python3 temporal_analysis.py
+python3 temporal_analysis.py --concept moksha
+python3 temporal_analysis.py --era -300   # network at 300 BCE
 
-These paths correspond to actual historical transmission routes. The figures in brackets are the people who carried ideas across traditions in real time.
+# Era snapshots with betweenness centrality
+python3 integrate_temporal_v2.py
+python3 integrate_temporal_v2.py --era_betweenness
+python3 integrate_temporal_v2.py --era 800
+```
 
-**Finding 3: Ramakrishna is the most central bridge figure.**
-
-In the combined graph including 24 historical figures, Ramakrishna is one step from nirvana, one step from fana, and one step from brahman simultaneously. He practised Hindu Tantra, Advaita Vedanta, Vaishnavism, Islam, and Christianity personally, making him the most structurally central figure in the entire transmission network.
-
-**Finding 4: Diffusion simulation confirms centrality-based seeding outperforms random.**
-
-On the full 2,349-concept graph after 25 steps:
-
-| Strategy | Final Adoption |
-|---|---|
-| Betweenness | 62.6% |
-| Percolation | 62.6% |
-| Degree | 62.5% |
-| Random | 58.4% |
-
-Seeding at structural hubs reaches approximately 4 percentage points more of the network than random seeding. The cascade follows a classic S-curve: slow awareness buildup, sudden tipping point, gradual plateau.
+**Data:** `temporal/temporal_source_layer.json` — 38 scholarly-cited sources, ~120 concept-datings with full citations covering Vedic through modern periods.
 
 ---
 
-## Two Layers
+### Study 2: Structural Homology Across Traditions (`temporal/`)
 
-**Layer 1: Classical concept graph.** Built from the darshana-graph dataset. Nodes are philosophical concepts. Edges are documented relationships between concepts, weighted by frequency. Covers 2,349 concepts and 3,858 unique edges across Hindu, Buddhist, Jain, and other traditions.
+Once concepts are temporally attributed, cross-tradition structural comparison becomes possible. We compute ego-network feature vectors for 48 temporally labelled concepts across eight traditions and identify concept pairs with high structural similarity.
 
-**Layer 2: Historical transmission layer.** A hand-curated dataset of 24 historical figures spanning Nagarjuna (2nd century) to Chogyam Trungpa (20th century). Each figure is a node connected to the concepts they bridged across traditions. This layer allows paths to route through the actual people who carried ideas from one tradition to another in historical time.
+**Key findings:**
+- Recovery rate 8/14 known scholarly correspondences (57%), including purusha-jiva (Samkhya/Jain, sim 0.990) and prakriti-maya (Samkhya/Vedic, sim 0.972)
+- Novel homologies: nibbana and samsara score 0.954 despite doctrinal opposition — both are the ultimate reference concept in their tradition's soteriology
+- Cetana (Buddhist intention) and ajiva (Jain non-living matter) score 0.923 — a pairing absent from the scholarly literature, identified computationally
+- Moha (Buddhist delusion) and tapas (Jain austerity) score 0.959 — mirror-image positions in the soteriological network
 
-The 24 figures: Nagarjuna, Patanjali, Shankara, Ramanuja, Madhva, Kabir, Guru Nanak, Chaitanya, Rumi, Ram Mohan Roy, Debendranath Tagore, Keshab Chandra Sen, Ramakrishna, Vivekananda, Helena Blavatsky, Henry Olcott, Annie Besant, Ramana Maharshi, Aurobindo, Aldous Huxley, Jiddu Krishnamurti, Alan Watts, Chogyam Trungpa, Prabhupada.
+**Scripts:**
+```bash
+cd temporal/
+
+# Install dependency
+pip install scikit-learn --break-system-packages
+
+# Run structural homology experiment
+python3 structural_homology.py --top_n 50
+python3 structural_homology.py --top_n 50 --min_degree 5  # stricter filter
+```
+
+**Data:** `temporal/homologues_v7.json` — top-200 cross-tradition structural homologue pairs with similarity scores and tradition labels.
 
 ---
 
-## Repo Structure
+### Study 3: Diffusion Simulation and Path-Finding (`notebooks/`)
+
+How far does a new idea travel if seeded at a structural hub? Which historical figures were the real bridges between traditions?
+
+**Key findings:**
+- Centrality-based seeding reaches 62.6% adoption vs 58.4% for random seeding after 25 steps
+- Brahman seeds produce a classic S-curve: tipping point at step 9, plateau at 62%
+- Ramakrishna is the most central bridge figure: one step from nirvana, fana, and brahman simultaneously
+- Shortest paths: sunyata to krsna consciousness (2 steps via maya), anatta to atman (2 steps via Ramana Maharshi), fana to krsna consciousness (3 steps via Ramakrishna)
+
+**Scripts:**
+```bash
+# Install dependencies
+pip install networkx matplotlib datasets --break-system-packages
+
+# Betweenness centrality and seeding strategies
+python3 notebooks/darshana_diffusion_v2.py --top_concepts
+python3 notebooks/darshana_diffusion_v2.py --seed_concept brahman --steps 30
+python3 notebooks/darshana_diffusion_v2.py --compare --steps 25
+
+# Path-finding through historical figures
+python3 notebooks/darshana_transmission_viz.py --from sunyata --to "krsna consciousness" --animate
+python3 notebooks/darshana_transmission_viz.py --from anatta --to atman --animate
+python3 notebooks/darshana_transmission_viz.py --show_figure Ramakrishna
+python3 notebooks/darshana_transmission_viz.py --all_paths
+```
+
+**Data:** `transmission_layer.json` — 24 historical figures (Nagarjuna to Chogyam Trungpa), 155 hand-curated transmission edges.
+
+---
+
+## Repository structure
 
 ```
 agentic-diffusion-sim/
-├── run_sim.py                        # Entry point for generic diffusion simulation
-├── transmission_layer.json           # 24 historical figures, 155 hand-curated edges
+├── temporal/                          # Studies 1 and 2
+│   ├── temporal_source_layer.json     # 38 sources, ~120 concept-datings
+│   ├── temporal_analysis.py           # Mismatch analysis and era snapshots
+│   ├── integrate_temporal_v2.py       # Three-tier era betweenness analysis
+│   ├── structural_homology.py         # Cross-tradition structural homologue experiment
+│   └── homologues_v7.json             # Top-200 cross-tradition homologue pairs
+├── notebooks/                         # Study 3
+│   ├── darshana_diffusion_v2.py       # Darshana diffusion simulation
+│   ├── darshana_path_viz.py           # Path finder on classical graph
+│   ├── darshana_transmission_viz.py   # Two-layer path finder and animator
+│   └── darshana_diffusion_standalone.py
 ├── agents/
-│   └── belief_agent.py               # Agent class with math and optional LLM modes
+│   └── belief_agent.py                # Four-stage belief update agent
 ├── network/
-│   └── generator.py                  # Graph generation and centrality targeting
+│   └── generator.py                   # Graph generation and centrality targeting
 ├── simulation/
-│   └── diffusion.py                  # Simulation loop
+│   └── diffusion.py                   # Simulation loop
 ├── visualization/
-│   └── animate.py                    # Adoption curves, stage flow, network plots
-├── notebooks/
-│   ├── darshana_diffusion_v2.py      # Main darshana simulation (concept-level graph)
-│   ├── darshana_path_viz.py          # Path finder on classical graph only
-│   ├── darshana_transmission_viz.py  # Full two-layer path finder and animator
-│   └── darshana_diffusion_standalone.py  # Standalone single-file version
-└── examples/                         # Sample outputs
+│   └── animate.py                     # Adoption curves, stage flow, network plots
+├── transmission_layer.json            # 24 historical figures, 155 edges
+├── run_sim.py                         # Generic diffusion simulation entry point
+└── examples/                          # Sample outputs
 ```
 
 ---
 
-## Usage
+## Data sources
 
-**Install dependencies:**
-```bash
-pip install networkx matplotlib datasets --break-system-packages
-```
+| Dataset | Location | Description |
+|---|---|---|
+| darshana-graph | [HuggingFace](https://huggingface.co/datasets/joyboseroy/darshana-graph) | 28,322 typed relationship edges, 2,349 concept nodes |
+| temporal_source_layer.json | `temporal/` | 38 scholarly sources, ~120 concept-datings with full citations |
+| transmission_layer.json | repo root | 24 historical figures, 155 typed transmission edges |
+| homologues_v7.json | `temporal/` | Top-200 cross-tradition structural homologue pairs |
 
-**Run the generic simulation (no data download needed):**
-```bash
-python3 run_sim.py                              # compare all 4 strategies
-python3 run_sim.py --scenario enterprise        # enterprise AI adoption
-python3 run_sim.py --scenario dharma            # dharma practice diffusion
-```
-
-**Run the darshana analysis (downloads ~10MB from HuggingFace):**
-```bash
-# Which concepts are the highway junctions?
-python3 notebooks/darshana_diffusion_v2.py --top_concepts
-
-# Seed a specific concept and watch it spread
-python3 notebooks/darshana_diffusion_v2.py --seed_concept brahman --steps 30
-
-# Compare all 4 seeding strategies
-python3 notebooks/darshana_diffusion_v2.py --compare --steps 25
-```
-
-**Find and animate paths between traditions:**
-```bash
-# List all 24 historical figures
-python3 notebooks/darshana_transmission_viz.py --list_figures
-
-# Animate a specific journey
-python3 notebooks/darshana_transmission_viz.py --from sunyata --to "krsna consciousness" --animate
-python3 notebooks/darshana_transmission_viz.py --from fana --to "krsna consciousness" --animate
-python3 notebooks/darshana_transmission_viz.py --from anatta --to atman --animate
-
-# Show a figure's ego-network (who they bridged)
-python3 notebooks/darshana_transmission_viz.py --show_figure Ramakrishna
-python3 notebooks/darshana_transmission_viz.py --show_figure Vivekananda
-python3 notebooks/darshana_transmission_viz.py --show_figure "Alan Watts"
-
-# Distance matrix between all landmark concepts
-python3 notebooks/darshana_transmission_viz.py --all_paths
-
-# Run all 9 preset journeys as static images
-python3 notebooks/darshana_transmission_viz.py --preset
-```
-
-**Optional LLM mode (Groq API key required):**
-```bash
-export GROQ_API_KEY=your_key_here
-python3 run_sim.py --strategy betweenness --llm --nodes 20 --steps 5
-```
+The temporal source layer covers the period from the Rigveda (c.1500 BCE) through the 20th century. Every dating is accompanied by a scholarly citation. The layer includes Pali-Sanskrit equivalents (nibbana/nirvana, kamma/karma, dhamma/dharma, panna/prajna) and practice vocabulary drawn from a review by a practitioner teacher (nirodha, nivarana, asrava, bodhyanga, dhyana, maitri, karuna, vedana, cetana).
 
 ---
 
-## Sample Outputs
-
-![Strategy comparison](examples/darshana_v2_strategy_comparison.png)
-
-*Adoption curves for four seeding strategies on the darshana concept graph. Centrality-based seeding consistently outperforms random seeding.*
-
-![Anatta to Atman](examples/path_anatta_atman.png)
-
-*Two steps from Buddhist no-self to Hindu eternal self, through Ramana Maharshi.*
-
-![Ramakrishna ego-network](examples/figure_ramakrishna.png)
-
-*Ramakrishna's node touches nirvikalpa samadhi, fana, mystical union, nirvana, brahman, and kali simultaneously. He is the highest-betweenness figure in the transmission layer.*
-
----
-
-## Related Projects
+## Related projects
 
 | Project | Connection |
 |---|---|
-| [darshana-graph](https://github.com/joyboseroy/darshana-graph) | The source dataset (arXiv:2606.18222) |
-| [digital-buddhism](https://github.com/joyboseroy/digital-buddhism) | Earlier network analysis of Buddhist teacher co-presence on Reddit |
-| [vada-simulator](https://github.com/joyboseroy/vada-simulator) | Multi-agent philosophical debate engine using FalkorDB and LangGraph |
-| [bengal-dharma-corpus](https://github.com/joyboseroy/bengal-dharma-corpus) | Computational study of lexical transmission across Bengali traditions |
-| [falkor-irac](https://github.com/joyboseroy/falkor-irac) | Graph-RAG legal reasoning using the same network science approach |
-
----
-
-## Data
-
-The darshana-graph dataset: [joyboseroy/darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph)
-
-The transmission layer (24 figures, 155 edges): `transmission_layer.json` in this repo
+| [darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph) | Source dataset (arXiv:2606.18222) |
+| [vada-simulator](https://github.com/joyboseroy/vada-simulator) | Multi-agent philosophical debate engine |
+| [bengal-dharma-corpus](https://github.com/joyboseroy/bengal-dharma-corpus) | Computational study of Bengali religious lexicon |
+| [digital-buddhism](https://github.com/joyboseroy/digital-buddhism) | Buddhist teacher network analysis on Reddit |
+| [falkor-irac](https://github.com/joyboseroy/falkor-irac) | Graph-RAG legal reasoning |
 
 ---
 
 ## Citation
 
 ```bibtex
+@article{bose2026attribution,
+  author = {Bose, Joy},
+  title = {Attribution Bias in Philosophical Knowledge Graphs:
+           Corpus Frequency versus Temporal Sourcing},
+  year = {2026}
+}
+
 @software{bose2026agentic,
   author = {Bose, Joy},
-  title = {agentic-diffusion-sim: Philosophical Concept Diffusion across Indian Traditions},
+  title = {darshana-temporal-analysis: Computational Studies of
+           Indian Philosophical Traditions},
   year = {2026},
-  url = {https://github.com/joyboseroy/agentic-diffusion-sim}
+  url = {https://github.com/joyboseroy/darshana-temporal-analysis}
 }
 
 @dataset{bose2025darshana,
@@ -202,18 +177,10 @@ The transmission layer (24 figures, 155 edges): `transmission_layer.json` in thi
   year = {2025},
   url = {https://huggingface.co/datasets/joyboseroy/darshana-graph}
 }
-
-@phdthesis{krishnan2025essays,
-  author = {Krishnan, Nanjundi Karthick},
-  title = {Essays in Social Networks, Behavior Change and Technology Adoption},
-  school = {University of Michigan},
-  year = {2025},
-  url = {https://hdl.handle.net/2027.42/199303}
-}
 ```
 
 ---
 
-## Medium Article
+## Medium article
 
 [How Ideas Travel Across Religions: A Computational Journey Through 2,000 Years of Indian Philosophy](https://joyboseroy.medium.com/how-ideas-travel-across-religions-a-computational-journey-through-2000-years-of-indian-philosophy-ce91b089e888)
