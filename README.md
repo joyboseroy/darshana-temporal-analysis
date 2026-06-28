@@ -80,6 +80,7 @@ Moves from a lexical graph (one node per word) toward a sense-disambiguated grap
 - Avidya: 5 senses separating Buddhist (avijja) from Advaita usage
 - Darshana-graph expanded from 28,322 to 45,155 edges by adding Mahayana Buddhist and Theravada sources with correct school labels
 - Running betweenness centrality on the Buddhist-only graph (buddhist_edges.jsonl, 16,833 edges) produces a strikingly different top-25 from the original Vedanta-dominated graph. Pratityasamutpada ranks first (0.155), followed by prajna (0.141), sunyata (0.119), anatta (0.111), and nirvana (0.111). Brahman appears at rank 23 (0.013), present only as a concept Buddhist texts reference in critique. This contrast quantifies the corpus composition bias the paper documents.
+- Jain-only betweenness centrality places jiva (0.286) at the network centre, followed by samyak darshana (0.135), ahimsa (0.130), and moksha (0.090) — the actual architecture of Jain soteriology. The three-way comparison of Hindu-only, Buddhist-only, and Jain-only betweenness demonstrates that the same graph methodology produces completely different philosophical maps depending on which tradition's texts supply the edges.
 
 ```bash
 cd diachronic/
