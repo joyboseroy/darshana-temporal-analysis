@@ -5,7 +5,7 @@
 This repository contains the code, data, and experiments supporting the paper:
 
 > **Attribution Bias in Philosophical Knowledge Graphs: Corpus Frequency versus Temporal Sourcing**
-> Joy Bose — arXiv:2026.XXXXX
+> Joy Bose — arXiv:2606.29070
 
 The paper argues that corpus-frequency attribution systematically misattributes philosophical concepts to later, textually dominant schools, demonstrates this using the [darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph), and shows that temporal attribution enables a new class of cross-tradition structural analysis.
 
@@ -208,7 +208,7 @@ darshana-temporal-analysis/
            Corpus Frequency versus Temporal Sourcing},
   year = {2026},
   journal = {arXiv preprint},
-  url = {https://arxiv.org/abs/2026.XXXXX}
+  url = {https://arxiv.org/abs/2606.29070}
 }
 
 @software{bose2026darshana,
